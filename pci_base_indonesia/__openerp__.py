@@ -34,7 +34,7 @@ v1.4
 
 *Author : Eka
 
-*Author : Eka
+*Author : Eka WN
 
 
 
