@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_users_form_add_branches" model="ir.ui.view">
+            <field name="name">res.users.branches.view</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <field name="groups_id" position="before">
+                    <group string="Branch Access">
+                        <field name="branch_ids" widget="many2many_tags" domain="[('branch','=',True)]" 
+                         context="{'user_preference': 0}"/>
+                        <field name="branch_id" readonly="0"
+                            attrs="{'invisible': [('branch_ids','=',False)]}" context="{'user_preference': 0}" />
+                    </group>
+                    <group string="Warehouse Access">
+                        <field name="warehouse_ids" widget="many2many_tags" context="{'user_preference': 0}"/>
+                        <field name="warehouse_id" readonly="0"
+                            attrs="{'invisible': [('warehouse_ids','=',False)]}" context="{'user_preference': 0}" />
+                    </group>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_users_form_simple_modif_branch" model="ir.ui.view">
+            <field name="name">res.users.preferences.form.view</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="before">
+                    <field name="branch_ids" widget="many2many_tags" domain="[('branch','=',True)]"  
+                        readonly="0" invisible="1"
+                         context="{'user_preference': 0}"/>
+                    <field name="branch_id" readonly="0"
+                        attrs="{'invisible': [('branch_ids','=',False)]}" context="{'user_preference': 0}" />
+                    <field name="warehouse_ids" readonly="0" invisible="1" widget="many2many_tags" context="{'user_preference': 0}"/>
+                    <field name="warehouse_id" readonly="0"
+                        attrs="{'invisible': [('warehouse_ids','=',False)]}" context="{'user_preference': 0}" />                     
+                </field>
+            </field>
+        </record>
+
+
+		<record id="res_partner_indonesia_view" model="ir.ui.view">
+    		<field name="name">res.partner.indonesia.view</field>
+    		<field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//div/field[@name='state_id']" position="attributes">
+					<attribute name="placeholder">Province</attribute>
+				</xpath>
+				<xpath expr="//field[@name='type']" position="attributes">
+					<attribute name="invisible">True</attribute>
+				</xpath>
+				
+				<field name="website" position="after">
+					<field name="salesman" invisible="1"/>
+					<field name="branch" invisible="1"/>
+                    <field name="branch_ids" domain="[('branch','=',True)]" 
+                       widget="many2many_tags"
+                        attrs="{'invisible': ['|',('branch','=',True),('supplier','=',False)]}"/>
+					<field name="branch_id" attrs="{'invisible': ['|',('customer','=',False),('branch','=',True),('salesman','=',False)],'readonly' : [('salesman','=',True)]}"
+							domain="[('branch','=',True)]" />
+                    <field name="main_branch" 
+                        attrs="{'invisible': [('branch','=',False)]}"/>
+				   	<field name="consignment" invisible="1"/>
+				   	<field name="warehouse_id" readonly="0"/>
+				   	<field name="this_for_all" invisible="0"/>
+                </field>
+            </field>
+    	</record>
+    	
+    	<record id="res_partner_incoterm" model="ir.ui.view">
+    		<field name="name">res.partner.incoterm</field>
+    		<field name="model">res.partner</field>
+    		<field name="inherit_id" ref="account.view_partner_property_form"/>
+    		<field name="arch" type="xml">
+                <field name="property_payment_term_id" position="after">
+                	<field name="incoterm_cust_id"/>
+                </field>
+                <field name="property_supplier_payment_term_id" position="after">
+                	<field name="incoterm_supplier_id"/>
+                </field>
+    		</field>
+    	</record>
+    	
+		<record model='ir.actions.act_window' id='res_partner_branch_action'>
+            <field name="name">Branch</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="domain">[('branch','=',True)]</field>
+            <field name="context">{'default_branch':1, 'default_company_type':'company', 'default_customer':1, 'default_supplier':1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Branch
+                </p>    
+            </field>
+        </record>
+        <menuitem action="res_partner_branch_action" id="res_partner_branch_menu" parent="base.menu_users" sequence="1"/>
+	 	<record id="base.action_partner_form" model="ir.actions.act_window">
+            <field name="domain">[('branch','=',False),('consignment','=',False)]</field>
+        </record>
+        
+        <record model='ir.actions.act_window' id='res_partner_consignment_action'>
+            <field name="name">Consignment</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="domain">[('consignment','=',True)]</field>
+            <field name="context">{'default_consignment':1,}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Consignment
+                </p>    
+            </field>
+        </record>
+        <menuitem action="res_partner_consignment_action" id="res_partner_consignment_menu" parent="base.menu_sales" sequence="4"/>
+        
+        <record model='ir.actions.act_window' id='res_partner_salesman_action'>
+            <field name="name">Salesman</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="domain">[('salesman','=',True)]</field>
+            <field name="context">{'default_salesman':1, 'default_customer':0, 'default_supplier':0}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Salesman
+                </p>    
+            </field>
+        </record>
+        <menuitem action="res_partner_salesman_action" id="res_partner_salesman_menu" parent="base.menu_sale_config" sequence="2"/>
+          	
+        
+	</data>
+</openerp>
