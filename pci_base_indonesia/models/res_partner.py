@@ -17,6 +17,8 @@ class ResUser(models.Model):
 
     warehouse_id = fields.Many2one('stock.warehouse', string='Default Warehouse', context={'user_preference': True})
 
+    # test code
+
     @api.multi
     def write(self, vals):
         res = super(ResUser, self).write(vals)
